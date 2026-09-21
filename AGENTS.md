@@ -8,7 +8,7 @@ Build a small, embeddable Rust execution foundation for agents. Preserve useful 
 
 - README describes shipped behaviour separately from proposed behaviour.
 - Remain in 0.0.n while iterating. Do not publish releases or claim production readiness as part of scaffolding.
-- The current journal is not a sandbox, executor, scheduler or automatic recovery engine.
+- The local preview executes explicit commands through bubblewrap. It is not yet an agent loop, MCP host, distributed scheduler or general security boundary for hostile workloads.
 - Do not expand into multi-agent scheduling, distributed workers or universal Bash/TypeScript compilation before local recovery is proven.
 - Keep Core integration optional: a workspace must be useful without a decision corpus.
 

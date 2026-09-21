@@ -2,8 +2,10 @@
 name = "asdecided-spool"
 version = "0.0.1"
 edition = "2024"
+rust-version = "1.89"
 publish = false
-description = "Durable execution workspace for AI agents — foundation prototype"
+license = "Apache-2.0"
+description = "Durable execution workspace for AI agents — local execution preview"
 
 [[bin]]
 name = "spool"

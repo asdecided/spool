@@ -30,4 +30,4 @@ Engineering decisions guide planning and review. Only explicit executable polici
 
 ## Current implementation
 
-Only jobs and JSON checkpoints exist. The schema is bootstrapped on open; introduce versioned migrations before changing the persisted schema. SQLite uses foreign keys, WAL and FULL synchronous mode. This is a local prototype with no encryption, hostile-client isolation or arbitrary-code execution.
+Schema 1 adds operations and append-only transition events to the initial jobs/checkpoints schema. Migration is transactional and newer schema versions are rejected. SQLite uses foreign keys, WAL and FULL synchronous mode. An OS file lock serialises journal owners and releases on process death. Explicit commands execute through bubblewrap with an offline per-job workspace, a wall-clock timeout and bounded captured output. Recovery marks dispatched actions uncertain and manual resolution records evidence. The preview has no model loop, MCP adapter, encryption, quotas on workspace disk/memory/process use, or claim of hostile-workload isolation.
