@@ -12,11 +12,11 @@ Omarchy is a target platform; this badge is a community identity label. No live 
 
 ## Install on your Omarchy XPS
 
-From a checkout of this candidate (Rust 1.89+):
+Install the tagged release directly, from any directory (Rust 1.89+):
 
 ```bash
 sudo pacman -S --needed rust base-devel bubblewrap git
-cargo install --path . --locked
+cargo install --git https://github.com/asdecided/spool.git --tag v0.0.1 --locked asdecided-spool
 export PATH="$HOME/.cargo/bin:$PATH"
 spool --version
 spool doctor
@@ -24,14 +24,15 @@ spool doctor
 
 `doctor` must pass before trying execution. Spool does not fall back to unsandboxed commands. Run it as your normal user, never with sudo.
 
-For a fresh checkout before publication, fetch the candidate branch:
+A [Linux x86_64 binary and SHA-256 checksum](https://github.com/asdecided/spool/releases/tag/v0.0.1) are also available. See [archive installation](docs/v0.0.1.md#installation-from-the-release-archive).
+
+To get the source and smoke-test script:
 
 ```bash
-git clone --branch feat/v0.0.1-recovery https://github.com/asdecided/spool.git
+git clone --branch v0.0.1 https://github.com/asdecided/spool.git
 cd spool
+bash scripts/xps-smoke.sh
 ```
-
-Once v0.0.1 is published, use `--branch v0.0.1` instead. Source installation avoids prebuilt glibc compatibility assumptions. CI also produces an x86_64 Linux archive and checksum for release preparation.
 
 ## Try a persistent job
 

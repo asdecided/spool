@@ -1,0 +1,61 @@
+name: Publish v0.0.1
+on:
+  push:
+    branches: [main]
+    paths: [release/v0.0.1.md]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: publish-v0.0.1
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Verify version and immutable tag
+        run: |
+          test "$(cargo metadata --no-deps --format-version 1 | jq -r '.packages[0].version')" = 0.0.1
+          if git rev-parse --verify refs/tags/v0.0.1 >/dev/null 2>&1; then
+            test "$(git rev-parse 'v0.0.1^{commit}')" = "$GITHUB_SHA"
+          fi
+      - run: cargo fmt --check
+      - run: cargo clippy --all-targets --locked -- -D warnings
+      - run: cargo test --locked
+      - run: sudo apt-get update && sudo apt-get install -y bubblewrap
+      - name: Verify sandbox
+        env:
+          SPOOL_SECRET: must-not-reach-the-sandbox
+        run: cargo test --locked --test sandbox -- --ignored
+      - run: bash scripts/package.sh
+      - name: Publish preview with checked assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          cd dist
+          sha256sum -c spool-v0.0.1-linux-x86_64.tar.gz.sha256
+          cd ..
+          cp release/v0.0.1.md /tmp/spool-release-notes.md
+          printf '\nSource commit: `%s`\n' "$GITHUB_SHA" >> /tmp/spool-release-notes.md
+          if gh release view v0.0.1 >/dev/null 2>&1; then
+            echo 'Release already exists; leaving it unchanged.'
+            exit 0
+          fi
+          gh release create v0.0.1 \
+            dist/spool-v0.0.1-linux-x86_64.tar.gz \
+            dist/spool-v0.0.1-linux-x86_64.tar.gz.sha256 \
+            --target "$GITHUB_SHA" \
+            --title 'Spool v0.0.1 — Pick up where you left off' \
+            --notes-file /tmp/spool-release-notes.md \
+            --prerelease
