@@ -1,0 +1,17 @@
+[package]
+name = "asdecided-spool"
+version = "0.0.1"
+edition = "2024"
+publish = false
+description = "Durable execution workspace for AI agents — foundation prototype"
+
+[[bin]]
+name = "spool"
+path = "src/main.rs"
+
+[dependencies]
+rusqlite = { version = "0.32", features = ["bundled"] }
+serde_json = "1"
+
+[dev-dependencies]
+tempfile = "3"
