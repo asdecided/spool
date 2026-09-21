@@ -4,11 +4,11 @@
 
 Rust library and CLI; SQLite jobs; append-only JSON checkpoints; reopening and validation tests; CI. This milestone proves basic persistence, not crash-safe tool execution.
 
-## 1. Operation journal and recovery
+## 1. Operation journal and recovery (implemented in v0.0.1 candidate)
 
 Versioned schema migrations, operation state machine, atomic worker ownership, fake executor and explicit reconciliation. Test crashes before dispatch, during dispatch and after an external effect but before local completion. Verify uncertain effects are never automatically repeated. Prove recovery in separate processes.
 
-## 2. Restricted local execution
+## 2. Restricted local execution (initial candidate implementation; live acceptance pending)
 
 Per-job workspaces, artifact storage, bounded outputs, timeouts and cancellation, actual platform sandboxing, secret references and permission checks. Start with one job/worker. Test surviving child processes and paths escaping the workspace. Unsupported platforms must fail closed for operations requiring sandboxing.
 

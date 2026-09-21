@@ -1,10 +1,10 @@
 name: Rust
-on: [push, pull_request]
+on: [push, pull_request, workflow_dispatch]
 permissions:
   contents: read
 jobs:
   check:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
@@ -13,3 +13,17 @@ jobs:
       - run: cargo fmt --check
       - run: cargo clippy --all-targets --locked -- -D warnings
       - run: cargo test --locked
+      - name: Install sandbox runtime
+        run: sudo apt-get update && sudo apt-get install -y bubblewrap
+      - name: Verify real sandbox
+        env:
+          SPOOL_SECRET: must-not-reach-the-sandbox
+        run: cargo test --locked --test sandbox -- --ignored
+      - name: Build release candidate
+        run: bash scripts/package.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: spool-v0.0.1-linux-x86_64
+          path: |
+            dist/*.tar.gz
+            dist/*.sha256
